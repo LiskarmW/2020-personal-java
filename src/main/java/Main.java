@@ -12,25 +12,19 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
-//        String str = null;
-//        try {
-//            str = FileUtils.readFileToString(new File("C:\\Users\\Administrator\\Desktop\\2020-personal-java\\src\\main\\java\\test.json"), "utf-8");
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         //读JSON到List<String>
         List<String> list = null;
         try {
-            list = FileUtils.readLines(new File("C:\\Users\\Administrator\\Desktop\\2020-personal-java\\src\\main\\java\\test.json"), "UTF-8");//集合
-            //list = FileUtils.readLines(new File("C:\\Users\\Administrator\\Desktop\\2020-personal-java\\2015-01-01-15.json\\test.json"), "UTF-8");//集合
+            //list = FileUtils.readLines(new File("C:\\Users\\Administrator\\Desktop\\2020-personal-java\\src\\main\\java\\test.json"), "UTF-8");//集合
+            list = FileUtils.readLines(new File("C:\\Users\\Administrator\\Desktop\\2020-personal-java\\2015-01-01-15.json\\test.json"), "UTF-8");//集合
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        HashMap<String, numOfEvent> ans1 = new HashMap<String, numOfEvent>();
-        HashMap<String, numOfEvent> ans2 = new HashMap<String, numOfEvent>();
-        HashMap<String, String> ans3 = new HashMap<String, String>();
+        Map<String, numOfEvent> ans1 = new HashMap<String, numOfEvent>();
+        Map<String, numOfEvent> ans2 = new HashMap<String, numOfEvent>();
+        Map<personIdAndRepoId, numOfEvent> ans3 = new HashMap<personIdAndRepoId, numOfEvent>();
 
         for (var str : Objects.requireNonNull(list)) {
             JSONObject obj = JSON.parseObject(str);
@@ -57,8 +51,8 @@ public class Main {
             Map.Entry entry = (Map.Entry) iter.next();
             Object key = entry.getKey();
             Object val = entry.getValue();
-            System.out.printf("%-12s", key);
-            System.out.println(val);
+//             System.out.printf("%-12s", key);
+//             System.out.println(val);
         }
         //System.out.println(str);
 
@@ -66,11 +60,12 @@ public class Main {
         for (var str : Objects.requireNonNull(list)) {
             JSONObject obj = JSON.parseObject(str);
             String event = obj.getString("type");
-            String projectId = obj.getString("id");
+            JSONObject repo = obj.getJSONObject("repo");
+            String repoId = repo.getString("id");
             numOfEvent input = new numOfEvent();
-
-            if (ans2.get(projectId) != null) {
-                input = ans2.get(projectId);
+            //System.out.println("repoId:"+repoId);
+            if (ans2.get(repoId) != null) {
+                input = ans2.get(repoId);
             }
             if (event.equals("PushEvent"))
                 input.PushEvent++;
@@ -81,7 +76,7 @@ public class Main {
             else
                 input.PullRequestEvent++;
 
-            ans2.put(projectId, input);
+            ans2.put(repoId, input);
         }
 
         Iterator iter2 = ans2.entrySet().iterator();
@@ -89,11 +84,43 @@ public class Main {
             Map.Entry entry = (Map.Entry) iter2.next();
             Object key = entry.getKey();
             Object val = entry.getValue();
-            System.out.printf("%-12s", key);
-            System.out.println(val);
+            // System.out.printf("%-12s", key);
+            // System.out.println(val);
         }
 
+        for (var str : Objects.requireNonNull(list)) {
+            JSONObject obj = JSON.parseObject(str);
+            String event = obj.getString("type");
+            JSONObject person = obj.getJSONObject("actor");
+            String personId = person.getString("id");
+            JSONObject repo = obj.getJSONObject("repo");
+            String repoId = repo.getString("id");
+            personIdAndRepoId personInRepoId = new personIdAndRepoId();
+            numOfEvent input = new numOfEvent();
+            personInRepoId.personId = personId;
+            personInRepoId.repoId = repoId;
+            if (ans3.get(personInRepoId) != null) {
+                input = ans3.get(personInRepoId);
+            }
+            if (event.equals("PushEvent"))
+                input.PushEvent++;
+            else if (event.equals("IssueCommentEvent"))
+                input.IssueCommentEvent++;
+            else if (event.equals("IssuesEvent"))
+                input.IssuesEvent++;
+            else
+                input.PullRequestEvent++;
+            ans3.put(personInRepoId, input);
+        }
 
+        Iterator iter3 = ans3.entrySet().iterator();
+        while (iter3.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter3.next();
+            Object key = entry.getKey();
+            Object val = entry.getValue();
+            System.out.printf("%-48s", key);
+            System.out.println(val);
+        }
     }
 
 }
