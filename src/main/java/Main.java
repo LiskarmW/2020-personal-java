@@ -29,6 +29,8 @@ public class Main {
         }
 
         HashMap<String, numOfEvent> ans1 = new HashMap<String, numOfEvent>();
+        HashMap<String, numOfEvent> ans2 = new HashMap<String, numOfEvent>();
+        HashMap<String, String> ans3 = new HashMap<String, String>();
 
         for (var str : Objects.requireNonNull(list)) {
             JSONObject obj = JSON.parseObject(str);
@@ -43,7 +45,7 @@ public class Main {
                 input.PushEvent++;
             else if (event.equals("IssueCommentEvent"))
                 input.IssueCommentEvent++;
-            else if(event.equals("IssuesEvent"))
+            else if (event.equals("IssuesEvent"))
                 input.IssuesEvent++;
             else
                 input.PullRequestEvent++;
@@ -55,10 +57,42 @@ public class Main {
             Map.Entry entry = (Map.Entry) iter.next();
             Object key = entry.getKey();
             Object val = entry.getValue();
-            System.out.printf("%-9s", key);
+            System.out.printf("%-12s", key);
             System.out.println(val);
         }
         //System.out.println(str);
+
+
+        for (var str : Objects.requireNonNull(list)) {
+            JSONObject obj = JSON.parseObject(str);
+            String event = obj.getString("type");
+            String projectId = obj.getString("id");
+            numOfEvent input = new numOfEvent();
+
+            if (ans2.get(projectId) != null) {
+                input = ans2.get(projectId);
+            }
+            if (event.equals("PushEvent"))
+                input.PushEvent++;
+            else if (event.equals("IssueCommentEvent"))
+                input.IssueCommentEvent++;
+            else if (event.equals("IssuesEvent"))
+                input.IssuesEvent++;
+            else
+                input.PullRequestEvent++;
+
+            ans2.put(projectId, input);
+        }
+
+        Iterator iter2 = ans2.entrySet().iterator();
+        while (iter2.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter2.next();
+            Object key = entry.getKey();
+            Object val = entry.getValue();
+            System.out.printf("%-12s", key);
+            System.out.println(val);
+        }
+
 
     }
 
