@@ -28,100 +28,78 @@ public class Main {
 
         for (var str : Objects.requireNonNull(list)) {
             JSONObject obj = JSON.parseObject(str);
-            String event = obj.getString("type");
             JSONObject person = obj.getJSONObject("actor");
-            String personId = person.getString("id");
-            numOfEvent input = new numOfEvent();
-            if (ans1.get(personId) != null) {
-                input = ans1.get(personId);
-            }
-            if (event.equals("PushEvent"))
-                input.PushEvent++;
-            else if (event.equals("IssueCommentEvent"))
-                input.IssueCommentEvent++;
-            else if (event.equals("IssuesEvent"))
-                input.IssuesEvent++;
-            else
-                input.PullRequestEvent++;
+            JSONObject repo = obj.getJSONObject("repo");
 
-            ans1.put(personId, input);
+            String event = obj.getString("type");
+            String personId = person.getString("id");
+            String repoId = repo.getString("id");
+
+            numOfEvent input1 = new numOfEvent();
+            numOfEvent input2 = new numOfEvent();
+            numOfEvent input3 = new numOfEvent();
+
+            personIdAndRepoId personInRepoId = new personIdAndRepoId();
+            personInRepoId.personId = personId;
+            personInRepoId.repoId = repoId;
+
+            if (ans1.get(personId) != null)
+                input1 = ans1.get(personId);
+            getDifferentEvents(input1, event);
+            ans1.put(personId, input1);
+
+            if (ans2.get(repoId) != null)
+                input2 = ans2.get(repoId);
+            getDifferentEvents(input2, event);
+            ans2.put(repoId, input2);
+
+            if (ans3.get(personInRepoId) != null)
+                input3 = ans3.get(personInRepoId);
+            getDifferentEvents(input3, event);
+            ans3.put(personInRepoId, input3);
         }
-        Iterator iter = ans1.entrySet().iterator();
+
+        System.out.println("case1:");
+        printAnswer(ans1, ans2, ans3, 1);
+        System.out.println("case2:");
+        printAnswer(ans1, ans2, ans3, 2);
+        System.out.println("case3:");
+        printAnswer(ans1, ans2, ans3, 3);
+
+    }
+
+
+    public static void printAnswer(Map<String, numOfEvent> tmp1,
+                                   Map<String, numOfEvent> tmp2,
+                                   Map<personIdAndRepoId, numOfEvent> tmp3,
+                                   int flag) {
+        int i = 0;
+        Iterator iter = tmp1.entrySet().iterator();
+        if (flag == 2)
+            iter = tmp2.entrySet().iterator();
+        else if (flag == 3)
+            iter = tmp3.entrySet().iterator();
         while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             Object key = entry.getKey();
             Object val = entry.getValue();
-//             System.out.printf("%-12s", key);
-//             System.out.println(val);
-        }
-        //System.out.println(str);
-
-
-        for (var str : Objects.requireNonNull(list)) {
-            JSONObject obj = JSON.parseObject(str);
-            String event = obj.getString("type");
-            JSONObject repo = obj.getJSONObject("repo");
-            String repoId = repo.getString("id");
-            numOfEvent input = new numOfEvent();
-            //System.out.println("repoId:"+repoId);
-            if (ans2.get(repoId) != null) {
-                input = ans2.get(repoId);
-            }
-            if (event.equals("PushEvent"))
-                input.PushEvent++;
-            else if (event.equals("IssueCommentEvent"))
-                input.IssueCommentEvent++;
-            else if (event.equals("IssuesEvent"))
-                input.IssuesEvent++;
-            else
-                input.PullRequestEvent++;
-
-            ans2.put(repoId, input);
-        }
-
-        Iterator iter2 = ans2.entrySet().iterator();
-        while (iter2.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter2.next();
-            Object key = entry.getKey();
-            Object val = entry.getValue();
-            // System.out.printf("%-12s", key);
-            // System.out.println(val);
-        }
-
-        for (var str : Objects.requireNonNull(list)) {
-            JSONObject obj = JSON.parseObject(str);
-            String event = obj.getString("type");
-            JSONObject person = obj.getJSONObject("actor");
-            String personId = person.getString("id");
-            JSONObject repo = obj.getJSONObject("repo");
-            String repoId = repo.getString("id");
-            personIdAndRepoId personInRepoId = new personIdAndRepoId();
-            numOfEvent input = new numOfEvent();
-            personInRepoId.personId = personId;
-            personInRepoId.repoId = repoId;
-            if (ans3.get(personInRepoId) != null) {
-                input = ans3.get(personInRepoId);
-            }
-            if (event.equals("PushEvent"))
-                input.PushEvent++;
-            else if (event.equals("IssueCommentEvent"))
-                input.IssueCommentEvent++;
-            else if (event.equals("IssuesEvent"))
-                input.IssuesEvent++;
-            else
-                input.PullRequestEvent++;
-            ans3.put(personInRepoId, input);
-        }
-
-        Iterator iter3 = ans3.entrySet().iterator();
-        while (iter3.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter3.next();
-            Object key = entry.getKey();
-            Object val = entry.getValue();
-            System.out.printf("%-48s", key);
+            System.out.printf("%-12s", key);
             System.out.println(val);
         }
+
     }
 
+    public static numOfEvent getDifferentEvents(numOfEvent input, String event) {
+        if (event.equals("PushEvent"))
+            input.PushEvent++;
+        else if (event.equals("IssueCommentEvent"))
+            input.IssueCommentEvent++;
+        else if (event.equals("IssuesEvent"))
+            input.IssuesEvent++;
+        else
+            input.PullRequestEvent++;
+        return input;
+    }
 }
+
 

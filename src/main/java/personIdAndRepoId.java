@@ -5,8 +5,8 @@ public class personIdAndRepoId {
     @Override
     public String toString() {
         return
-                "personId='" + personId + '\'' +"   "+
-                        ", repoId='" + repoId + '\''
+                "personId='" + personId + '\'' + "   " +
+                        ", repoId='" + repoId + '\'' + "   "
                 ;
     }
 }
