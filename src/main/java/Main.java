@@ -39,20 +39,23 @@ public class Main {
             if (ans1.get(personId) != null) {
                 input = ans1.get(personId);
             }
-            switch (event) {
-                case "PushEvent" -> input.PushEvent++;
-                case "IssueCommentEvent" -> input.IssueCommentEvent++;
-                case "IssuesEvent" -> input.IssuesEvent++;
-                case "PullRequestEvent" -> input.PullRequestEvent++;
-            }
+            if (event.equals("PushEvent"))
+                input.PushEvent++;
+            else if (event.equals("IssueCommentEvent"))
+                input.IssueCommentEvent++;
+            else if(event.equals("IssuesEvent"))
+                input.IssuesEvent++;
+            else
+                input.PullRequestEvent++;
+
             ans1.put(personId, input);
         }
         Iterator iter = ans1.entrySet().iterator();
-        while(iter.hasNext()){
-            Map.Entry entry = (Map.Entry)iter.next();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry) iter.next();
             Object key = entry.getKey();
             Object val = entry.getValue();
-            System.out.printf("%-9s",key);
+            System.out.printf("%-9s", key);
             System.out.println(val);
         }
         //System.out.println(str);
