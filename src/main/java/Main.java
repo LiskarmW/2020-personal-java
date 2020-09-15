@@ -15,18 +15,18 @@ public class Main {
                 String userName = args[1];
                 if (args[2].equals("--event") || args[2].equals("-e")) {
                     String event = args[3];
-                    event = event.substring(0,1).toLowerCase() + event.substring(1);
+                    event = event.substring(0, 1).toLowerCase() + event.substring(1);
                     findInType1(userName, event);
                 } else {
                     String repoName = args[3];
                     String event = args[5];
-                    event = event.substring(0,1).toLowerCase() + event.substring(1);
+                    event = event.substring(0, 1).toLowerCase() + event.substring(1);
                     findInType3(userName + repoName, event);
                 }
             } else {
                 String repoName = args[1];
                 String event = args[3];
-                event = event.substring(0,1).toLowerCase() + event.substring(1);
+                event = event.substring(0, 1).toLowerCase() + event.substring(1);
                 findInType2(repoName, event);
             }
         }
@@ -167,10 +167,20 @@ public class Main {
 
     public static void getDifferentEvents(numOfEvent input, String event) {
         switch (event) {
-            case "PushEvent" -> input.PushEvent++;
-            case "IssueCommentEvent" -> input.IssueCommentEvent++;
-            case "IssuesEvent" -> input.IssuesEvent++;
-            case "PullRequestEvent" -> input.PullRequestEvent++;
+            case "PushEvent":
+                input.PushEvent++;
+                break;
+            case "IssueCommentEvent":
+                input.IssueCommentEvent++;
+                break;
+            case "IssuesEvent":
+                input.IssuesEvent++;
+                break;
+            case "PullRequestEvent":
+                input.PullRequestEvent++;
+                break;
+            default:
+                break;
         }
     }
 
