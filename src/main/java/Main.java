@@ -8,14 +8,15 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
-        if (args.length > 0) {
+        if (args.length > 0) {// 如果输入为空则什么也不执行
             if (args[0].equals("--init") || args[0].equals("-i")) {
-                JSONFilesToMap(args[1]);
+                JSONFilesToMap(args[1]);// args[1]是文件夹路径，调用此函数输出 3 个JSON文件这样就不用每次都遍历处理原 JSON 文件，而是通过查找输出的，整理过的 JSON 文件来获得对应的值
+                //以下是分别对应 3 个命令的查询判断
             } else if (args[0].equals("--user") || args[0].equals("-u")) {
                 String userName = args[1];
                 if (args[2].equals("--event") || args[2].equals("-e")) {
                     String event = args[3];
-                    event = event.substring(0, 1).toLowerCase() + event.substring(1);
+                    event = event.substring(0, 1).toLowerCase() + event.substring(1);// 将事件单词的首字母转化成小写，否则无法查询
                     findInType1(userName, event);
                 } else {
                     String repoName = args[3];
@@ -30,14 +31,6 @@ public class Main {
                 findInType2(repoName, event);
             }
         }
-//        JSONFilesToMap("C:\\Users\\Administrator\\Desktop\\bianli\\json");
-//        String userName = "waleko";
-//        String event = "PushEvent";
-//        event = event.substring(0,1).toLowerCase() + event.substring(1);
-//        System.out.println(event);
-//        findInType1(userName,event);
-//        findInType2("katzer/cordova-plugin-background-mode", "pushdent");
-//        findInType3("cdupuisatomist/automation-client", "pushEvent");
     }
 
     //个人的 4 种事件的数量
@@ -53,7 +46,10 @@ public class Main {
         JSONObject user = jsonObj.getJSONObject(userName);
         Integer answer;
         answer = user.getInteger(event);
-        System.out.println(answer);
+        if (answer == null)
+            System.out.println(0);
+        else
+            System.out.println(answer);
 
     }
 
@@ -67,7 +63,11 @@ public class Main {
         }
         JSONObject jsonObj = JSONObject.parseObject(str);
         JSONObject repo = jsonObj.getJSONObject(repoName);
-        System.out.println(repo.getInteger(event));
+        Integer answer = repo.getInteger(event);
+        if (answer == null)
+            System.out.println(0);
+        else
+            System.out.println(answer);
 
     }
 
@@ -81,33 +81,39 @@ public class Main {
         }
         JSONObject jsonObj = JSONObject.parseObject(str);
         JSONObject userAndRepo = jsonObj.getJSONObject(userAndRepoName);
-        System.out.println(userAndRepo.getInteger(event));
+        Integer answer = userAndRepo.getInteger(event);
+        if (answer == null)
+            System.out.println(0);
+        else
+            System.out.println(userAndRepo.getInteger(event));
     }
 
     public static void JSONFilesToMap(String path) {
+        //定义3个 Map 容器，其中 numOfEvent 是自己定义的类，其中的属性值是 4 个事件的值
         Map<String, numOfEvent> type1 = new HashMap<String, numOfEvent>();
         Map<String, numOfEvent> type2 = new HashMap<String, numOfEvent>();
         Map<String, numOfEvent> type3 = new HashMap<String, numOfEvent>();
-        List<File> fileList = (List<File>) FileUtils.listFiles(new File(path), new String[]{"json"}, true);
-
+        List<File> fileList = (List<File>) FileUtils.listFiles(new File(path), new String[]{"json"}, true);//获得文件路径
         fileList.forEach(readFile::readLines);
+        //遍历同一个文件夹下所有 JSON 文件
         for (File filePath : fileList) {
             List<String> list = null;
             try {
-                list = FileUtils.readLines(filePath, "UTF-8");//集合
+                list = FileUtils.readLines(filePath, "UTF-8");//将 JSON 文件按行读取并存入 List<String>list 中
             } catch (IOException e) {
                 e.printStackTrace();
             }
             for (String str : Objects.requireNonNull(list)) {
+                // 3 个不同的 JSON 对象分别对应不同的要求
                 JSONObject obj = JSON.parseObject(str);
                 JSONObject user = obj.getJSONObject("actor");
                 JSONObject repo = obj.getJSONObject("repo");
 
-                String event = obj.getString("type");
+                String event = obj.getString("type");//事件名
                 String userName = user.getString("login");
                 String repoName = repo.getString("name");
-                String userAndRepoName = userName + repoName;
-
+                String userAndRepoName = userName + repoName;//简单的将用户名和事件名拼接在一起当做第三个 Map 的 Key 值，用于唯一确定一个用户在一个项目中的事件
+                // 将需要的内容存入 Map
                 numOfEvent input1 = new numOfEvent();
                 numOfEvent input2 = new numOfEvent();
                 numOfEvent input3 = new numOfEvent();
@@ -130,7 +136,7 @@ public class Main {
                 type3.put(userAndRepoName, input3);
             }
         }
-
+        //调用 OutputFile 函数将 3 个 Map 输出成 JSON 文件
         OutputFile(type1, type2, type3);
     }
 
@@ -142,10 +148,7 @@ public class Main {
         String s1 = JSONObject.toJSONString(t1);
         String s2 = JSONObject.toJSONString(t2);
         String s3 = JSONObject.toJSONString(t3);
-//        System.out.println(222);
-//        System.out.println(s1);
-//        System.out.println(s2);
-//        System.out.println(s3);
+
         try {
             FileUtils.writeStringToFile(new File("map1.json"), s1, "UTF-8");
         } catch (IOException e) {
